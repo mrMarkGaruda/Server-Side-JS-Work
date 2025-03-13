@@ -1,3 +1,3 @@
 # Server-Side-JS-Work
 
-![image](https://github.com/user-attachments/assets/a7f24740-099d-4081-917e-0f413c5f2458)
+![image](https://github.com/user-attachments/assets/efa3473a-0a8d-42f3-b57e-2c7b1f298c8c)
