@@ -1,5 +1,5 @@
 # Server-Side-JS-Work
 
-A UML map for an e-commerce store that sells prints
+A UML map for an e-commerce store that sells art prints
 
-![UML Map](https://github.com/user-attachments/assets/efa3473a-0a8d-42f3-b57e-2c7b1f298c8c)
+![ArtPrint UML](https://github.com/user-attachments/assets/d04afe47-00b3-4053-8c23-c4552c9bf4fc)
