@@ -1,17 +1,18 @@
 {
   "name": "Server-Side-JS-Work",
   "version": "1.0.0",
+  "description": "Art Print Store - REST API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "Art Print Store - REST API",
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
     "express": "^4.21.2",
     "mongoose": "^7.2.0"
   }
