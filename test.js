@@ -1,5 +1,6 @@
 const test = () => {
-    console.log("test")
-}
-
-module.exports = test
+    console.log("test");
+  };
+  
+  module.exports = test;
+  
