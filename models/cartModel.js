@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const cartItemSchema = new Schema({
-  variant: { type: Schema.Types.ObjectId, ref: "PrintVariant" },
+  print: { type: Schema.Types.ObjectId, ref: "ArtPrint" },
   quantity: Number,
   price: Number
 });
