@@ -1,91 +1,67 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
-
 const saltRounds = 10;
 
-/**
- * Sign up (Create User)
- */
-exports.userSignUp = async (req, res) => {
+exports.userSignUp = async (req, res, next) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
+    const { firstName, lastName, email, password } = req.body;
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({ error: "All fields (firstName, lastName, email, password) are required" });
     }
-    // Hash password
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(400).json({ error: "Email already in use" });
     const hashed = await bcrypt.hash(password, saltRounds);
-
-    const newUser = new User({
-      firstName,
-      lastName,
-      email,
-      password: hashed,
-      role: role || "Customer", // default to Customer
-      signUpTime: new Date(),
-    });
-
+    const newUser = new User({ firstName, lastName, email, password: hashed });
     const savedUser = await newUser.save();
-    // Return minimal user data
+    const token = jwt.sign({ userId: savedUser._id }, process.env.SECRET_TOKEN_KEY, { expiresIn: "24h" });
     res.status(201).json({
       message: "User created successfully",
-      user: {
-        firstName: savedUser.firstName,
-        lastName: savedUser.lastName,
-        email: savedUser.email,
-        role: savedUser.role
-      }
+      token,
+      user: { firstName: savedUser.firstName, lastName: savedUser.lastName, email: savedUser.email }
     });
-  } catch (err) {
-    console.error("Error in userSignUp:", err);
-    res.status(500).json({ error: "Failed to create user" });
+  } catch (error) {
+    next(error);
   }
 };
 
-/**
- * Log in
- */
-exports.userLogIn = async (req, res) => {
+exports.userLogIn = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    if(!email || !password){
+    if (!email || !password)
       return res.status(400).json({ error: "Email and password are required" });
-    }
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-    // Compare password
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-    // Update login times
-    user.lastLoginTime = user.loginTime || null;
-    user.loginTime = new Date();
-    await user.save();
-
+    const foundUser = await User.findOne({ email });
+    if (!foundUser) return res.status(401).json({ error: "Invalid credentials" });
+    const passwordMatch = await bcrypt.compare(password, foundUser.password);
+    if (!passwordMatch) return res.status(401).json({ error: "Invalid credentials" });
+    const token = jwt.sign({ userId: foundUser._id }, process.env.SECRET_TOKEN_KEY, { expiresIn: "24h" });
     res.json({
       message: "Logged in successfully",
-      user: {
-        email: user.email,
-        role: user.role
-      }
+      token,
+      user: { firstName: foundUser.firstName, lastName: foundUser.lastName, email: foundUser.email }
     });
-  } catch (err) {
-    console.error("Error in userLogIn:", err);
-    res.status(500).json({ error: "Failed to log in" });
+  } catch (error) {
+    next(error);
   }
 };
 
-/**
- * Get all users
- */
-exports.getAllUsers = async (req, res) => {
+exports.userUpdate = async (req, res, next) => {
   try {
-    const users = await User.find().select("-password"); // hide password
-    res.json(users);
-  } catch (err) {
-    console.error("Error in getAllUsers:", err);
-    res.status(500).json({ error: "Failed to get users" });
+    const userId = req.userId; // Provided by auth middleware
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded or wrong file format" });
+    }
+    const fileUrl = req.protocol + "://" + req.get("host") + "/" + req.file.processedPath;
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { imageUrl: fileUrl },
+      { new: true, runValidators: true }
+    );
+    res.json({
+      message: "User updated successfully",
+      imageUrl: updatedUser.imageUrl
+    });
+  } catch (error) {
+    next(error);
   }
 };
