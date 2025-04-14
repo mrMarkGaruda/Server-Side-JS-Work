@@ -141,6 +141,7 @@ app.post("/signup", async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
     const newUser = new User({ firstName, lastName, email, password: hashed });
     await newUser.save();
+    console.log(newUser);
     req.session.user = newUser;
     res.redirect("/");
   } catch (err) {
