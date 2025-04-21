@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
 const bcrypt = require("bcrypt");
+const invoiceRoutes = require("./routes/invoiceRoutes");
+const productRoutes = require("./routes/productRoutes");
 
 // --- Connect to MongoDB ---
 const MONGO_URI = process.env.MONGO_URI;
@@ -28,6 +30,8 @@ const port = process.env.PORT || 5000;
 // --- Middleware ---
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/api/invoices", invoiceRoutes);
+app.use("/api/products", productRoutes);
 
 // Setup sessions for user authentication
 app.use(

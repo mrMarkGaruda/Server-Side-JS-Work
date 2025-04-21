@@ -9,7 +9,12 @@ const userSchema = new Schema(
     email: { type: String, required: [true, "Email is required"], unique: true },
     password: { type: String, required: [true, "Password is required"] },
     role: { type: String, enum: ["Customer", "Admin"], default: "Customer" },
-    imageUrl: { type: String }
+    imageUrl: { type: String },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user"
+    }
   },
   { timestamps: true } // Automatically adds createdAt and updatedAt fields
 );
